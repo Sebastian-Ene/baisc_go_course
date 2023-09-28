@@ -1,5 +1,7 @@
 package main
 
+import "fmt"
+
 func main() {
 	cards := newDeck()
 
@@ -14,6 +16,17 @@ func main() {
 
 	hand2.print()
 	cards.print()
+
+	newDeck := newDeck()
+	fmt.Println(newDeck.toString())
+	newDeck.saveToFile("something.txt")
+
+	newDeck1 := newDeckFromFile("something.txt")
+	newDeck1.print()
+
+	newDeck1 = newDeck1.shuffle()
+	newDeck1.print()
+
 }
 
 func newCard() string {

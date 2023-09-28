@@ -2,7 +2,10 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 	"math/rand"
+	"os"
+	"strings"
 )
 
 // Create new type
@@ -35,7 +38,7 @@ func (d deck) deal(numbOfCards int) (deck, deck) {
 	hand := deck{}
 	n := 0
 	for n < numbOfCards {
-		randomIndice := rand.Intn(len(d))
+		randomIndice := rand.Intn(len(d) - 1)
 		hand = append(hand, d[randomIndice])
 		d = append(d[:randomIndice], d[randomIndice+1:]...)
 		n += 1
@@ -47,3 +50,33 @@ func (d deck) deal(numbOfCards int) (deck, deck) {
 func dealCourse(d deck, handSize int) (deck, deck) {
 	return d[:handSize], d[handSize:]
 }
+
+func (d deck) saveToFile(fileName string) error {
+	stringToSave := d.toString()
+	return ioutil.WriteFile(fileName, []byte(stringToSave), 0666)
+}
+
+func (d deck) toString() string {
+	return strings.Join(d, ",")
+}
+
+func newDeckFromFile(fileName string) deck {
+	bs, err := ioutil.ReadFile(fileName)
+	if err != nil {
+		fmt.Println("Error: ", err)
+		os.Exit(1)
+	}
+	dString := string(bs)
+	return deck(strings.Split(dString, ","))
+}
+
+func (d deck) shuffle() deck {
+	for i, card := range d {
+		randIndice := rand.Intn(len(d) - 1)
+		d[i] = d[randIndice]
+		d[randIndice] = card
+	}
+	return d
+}
+
+// TODO: make shuffleInPlace function
